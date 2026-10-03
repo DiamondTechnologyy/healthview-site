@@ -1,6 +1,6 @@
 window.HV_CONFIG = {
-  loginUrl: "https://www.healthview.com.br/",
-  whatsappNumber: "5500000000000",
+  loginUrl: "https://app.healthview.com.br/",
+  whatsappNumber: "5561991388851",
   whatsappText: "Olá! Conheci o Health View e gostaria de conhecer a ferramenta.",
   formEndpoint: "",
   successUrl: "obrigado.html",
