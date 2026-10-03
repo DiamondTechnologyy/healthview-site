@@ -1,0 +1,17 @@
+:root{
+  --navy:#0b285d;
+  --navy-dark:#071b42;
+  --blue:#1a4ea5;
+  --teal:#0b96a4;
+  --coral:#df5b4f;
+  --coral-dark:#c94b41;
+  --coral-soft:#fff1ef;
+  --ink:#19365f;
+  --muted:#62738d;
+  --line:#d7e0e9;
+  --bg:#f6f8f9;
+  --surface:#ffffff;
+  --surface-alt:#eef2f4;
+  --container:1180px;
+  --shadow:0 16px 40px rgba(24,48,81,.07);
+}
