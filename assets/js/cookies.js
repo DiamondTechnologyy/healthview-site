@@ -1,5 +1,5 @@
 ﻿(function(){
-  const STORAGE_KEY = 'hv_cookie_consent_v2';
+  const STORAGE_KEY = 'hv_cookie_consent_v3';
 
   const defaultConsent = {
     necessary: true,
@@ -17,8 +17,16 @@
   }
 
   function applyConsent(consent){
-    window.HV_COOKIE_CONSENT = consent;
-    window.dispatchEvent(new CustomEvent('hv:consent-updated', { detail: consent }));
+    const normalized = {...defaultConsent, ...(consent || {})};
+    window.HV_COOKIE_CONSENT = normalized;
+
+    if(typeof window.hvApplyConsent === 'function'){
+      window.hvApplyConsent(normalized);
+    }
+
+    window.dispatchEvent(new CustomEvent('hv:consent-updated', {
+      detail: normalized
+    }));
   }
 
   function closeAll(){
@@ -28,7 +36,11 @@
 
   function saveConsent(consent){
     const finalConsent = {...defaultConsent, ...consent};
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(finalConsent));
+
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(finalConsent));
+    }catch(e){}
+
     applyConsent(finalConsent);
     closeAll();
   }
@@ -40,13 +52,17 @@
     const modal = document.createElement('div');
     modal.id = 'hv-cookie-modal';
     modal.className = 'cookie-modal';
+
     modal.innerHTML = `
       <div class="cookie-modal__backdrop" data-cookie-close></div>
       <div class="cookie-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="cookie-title">
         <button class="cookie-modal__close" type="button" aria-label="Fechar" data-cookie-close>×</button>
+
         <span class="cookie-eyebrow">PRIVACIDADE</span>
         <h2 id="cookie-title">Preferências de cookies</h2>
-        <p class="cookie-modal__intro">Você escolhe quais tecnologias opcionais podem ser utilizadas neste site.</p>
+        <p class="cookie-modal__intro">
+          Você escolhe quais tecnologias opcionais podem ser utilizadas neste site.
+        </p>
 
         <label class="cookie-option cookie-option--locked">
           <span>
@@ -73,16 +89,27 @@
         </label>
 
         <div class="cookie-modal__actions">
-          <button type="button" class="btn cookie-btn cookie-btn--secondary" data-cookie-reject>Recusar não essenciais</button>
-          <button type="button" class="btn btn-primary cookie-btn" data-cookie-save>Salvar preferências</button>
+          <button type="button" class="btn cookie-btn cookie-btn--secondary" data-cookie-reject>
+            Recusar não essenciais
+          </button>
+          <button type="button" class="btn btn-primary cookie-btn" data-cookie-save>
+            Salvar preferências
+          </button>
         </div>
       </div>
     `;
+
     document.body.appendChild(modal);
 
-    modal.querySelectorAll('[data-cookie-close]').forEach(el => el.addEventListener('click', () => modal.remove()));
-    modal.querySelector('[data-cookie-reject]').addEventListener('click', () => saveConsent({analytics:false, marketing:false}));
-    modal.querySelector('[data-cookie-save]').addEventListener('click', () => {
+    modal.querySelectorAll('[data-cookie-close]').forEach(el => {
+      el.addEventListener('click', () => modal.remove());
+    });
+
+    modal.querySelector('[data-cookie-reject]')?.addEventListener('click', () => {
+      saveConsent({analytics:false, marketing:false});
+    });
+
+    modal.querySelector('[data-cookie-save]')?.addEventListener('click', () => {
       saveConsent({
         analytics: !!modal.querySelector('#cookie-analytics')?.checked,
         marketing: !!modal.querySelector('#cookie-marketing')?.checked
@@ -97,54 +124,90 @@
     banner.id = 'hv-cookie-banner';
     banner.className = 'cookie-banner';
     banner.setAttribute('aria-label','Preferências de cookies');
+
     banner.innerHTML = `
       <div class="cookie-banner__content">
         <div class="cookie-banner__text">
           <strong>Sua privacidade importa.</strong>
-          <p>Usamos tecnologias necessárias para o funcionamento do site. Com sua autorização, também podemos usar cookies de analytics e marketing para medir a experiência e as campanhas.</p>
+          <p>
+            Usamos tecnologias necessárias para o funcionamento do site.
+            Com sua autorização, também podemos usar cookies de analytics e marketing
+            para medir a experiência e as campanhas.
+          </p>
           <a href="privacidade.html">Política de Privacidade</a>
         </div>
+
         <div class="cookie-banner__actions">
-          <button type="button" class="cookie-link-btn" data-cookie-preferences>Preferências</button>
-          <button type="button" class="btn cookie-btn cookie-btn--secondary" data-cookie-reject>Recusar não essenciais</button>
-          <button type="button" class="btn btn-primary cookie-btn" data-cookie-accept>Aceitar todos</button>
+          <button type="button" class="cookie-link-btn" data-cookie-preferences>
+            Preferências
+          </button>
+          <button type="button" class="btn cookie-btn cookie-btn--secondary" data-cookie-reject>
+            Recusar não essenciais
+          </button>
+          <button type="button" class="btn btn-primary cookie-btn" data-cookie-accept>
+            Aceitar todos
+          </button>
         </div>
       </div>
     `;
+
     document.body.appendChild(banner);
 
-    banner.querySelector('[data-cookie-preferences]').addEventListener('click', openPreferences);
-    banner.querySelector('[data-cookie-reject]').addEventListener('click', () => saveConsent({analytics:false, marketing:false}));
-    banner.querySelector('[data-cookie-accept]').addEventListener('click', () => saveConsent({analytics:true, marketing:true}));
+    banner.querySelector('[data-cookie-preferences]')?.addEventListener('click', openPreferences);
+
+    banner.querySelector('[data-cookie-reject]')?.addEventListener('click', () => {
+      saveConsent({analytics:false, marketing:false});
+    });
+
+    banner.querySelector('[data-cookie-accept]')?.addEventListener('click', () => {
+      saveConsent({analytics:true, marketing:true});
+    });
   }
 
-  function init(){
-    const existing = getConsent();
-    if(existing){
-      applyConsent(existing);
-    } else {
-      showBanner();
-    }
+  function bindPreferenceLinks(){
+    document.querySelectorAll(
+      '[data-cookie-preferences-link], .js-cookie-settings'
+    ).forEach(el => {
+      if(el.dataset.cookieBound === '1') return;
 
-    document.querySelectorAll('[data-cookie-preferences-link]').forEach(el => {
-      el.addEventListener('click', (e) => {
+      el.dataset.cookieBound = '1';
+
+      el.addEventListener('click', e => {
         e.preventDefault();
         openPreferences();
       });
     });
   }
 
+  function init(){
+    const existing = getConsent();
+
+    if(existing){
+      applyConsent(existing);
+    }else{
+      showBanner();
+    }
+
+    bindPreferenceLinks();
+
+    // main.js cria o link do rodapé; observamos o DOM para ligá-lo assim que aparecer.
+    const observer = new MutationObserver(() => bindPreferenceLinks());
+    observer.observe(document.body, {childList:true, subtree:true});
+  }
+
   window.HV_COOKIES = {
     openPreferences,
     getConsent,
     clear(){
-      localStorage.removeItem(STORAGE_KEY);
+      try{
+        localStorage.removeItem(STORAGE_KEY);
+      }catch(e){}
       location.reload();
     }
   };
 
   if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', init, {once:true});
   }else{
     init();
   }
