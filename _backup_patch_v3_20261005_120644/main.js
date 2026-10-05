@@ -1,4 +1,4 @@
-﻿(function(){
+(function(){
   const cfg = window.HV_CONFIG || {};
 
   // Fallback: garante o carregamento do gerenciador de cookies mesmo se o index.html
@@ -62,27 +62,6 @@
     settings.textContent='Preferências de cookies';
     privacyLink.insertAdjacentElement('afterend',settings);
   }
-  // Máscara de WhatsApp/telefone brasileiro
-  const phoneInput = document.getElementById('lead-phone');
-  if(phoneInput){
-    const maskPhone = (value) => {
-      const digits = String(value || '').replace(/\D/g,'').slice(0,11);
-      if(!digits) return '';
-      if(digits.length <= 2) return `(${digits}`;
-      if(digits.length <= 7) return `(${digits.slice(0,2)}) ${digits.slice(2)}`;
-      return `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
-    };
-
-    phoneInput.value = maskPhone(phoneInput.value);
-
-    phoneInput.addEventListener('input', (e) => {
-      const start = e.target.selectionStart || e.target.value.length;
-      e.target.value = maskPhone(e.target.value);
-      e.target.setSelectionRange(e.target.value.length, e.target.value.length);
-    });
-  }
-
-
 
   const form=document.getElementById('lead-form');
   if(form){
@@ -150,5 +129,3 @@
     });
   }
 })();
-
-

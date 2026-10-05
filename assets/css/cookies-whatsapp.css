@@ -1,0 +1,43 @@
+/* Health View — WhatsApp + Consentimento de Cookies */
+.whatsapp-float{width:56px;height:56px;background:#25D366;box-shadow:0 14px 34px rgba(37,211,102,.30);transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.whatsapp-float:hover{background:#1fbd5c;transform:translateY(-2px);box-shadow:0 18px 38px rgba(37,211,102,.35)}
+.whatsapp-icon{width:31px;height:31px;display:block;fill:#fff}
+
+.cookie-banner{position:fixed;left:18px;right:18px;bottom:18px;z-index:3000;display:none;align-items:center;justify-content:space-between;gap:28px;max-width:1180px;margin:0 auto;padding:20px 22px;background:#fff;border:1px solid #dce4ed;border-radius:10px;box-shadow:0 20px 60px rgba(8,28,69,.18)}
+.cookie-banner.is-visible{display:flex}
+.cookie-banner-copy{max-width:720px}
+.cookie-banner-copy strong{display:block;color:var(--navy);font-size:16px;margin-bottom:5px}
+.cookie-banner-copy p{margin:0;color:#607189;font-size:13px;line-height:1.55}
+.cookie-banner-copy a{color:var(--blue);text-decoration:underline;text-underline-offset:2px}
+.cookie-banner-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.cookie-btn{min-height:40px;padding:0 14px;border:1px solid transparent;border-radius:7px;font:inherit;font-size:12px;font-weight:600;cursor:pointer;transition:.2s ease;white-space:nowrap}
+.cookie-btn-primary{background:var(--navy);color:#fff}
+.cookie-btn-primary:hover{background:#113674}
+.cookie-btn-secondary{background:#fff;color:var(--navy);border-color:#d5dee8}
+.cookie-btn-secondary:hover{background:#f5f8fb}
+
+.cookie-modal-overlay{position:fixed;inset:0;z-index:3100;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,18,45,.56);backdrop-filter:blur(4px)}
+.cookie-modal-overlay.is-visible{display:flex}
+.cookie-modal{width:min(620px,100%);max-height:calc(100vh - 40px);overflow:auto;background:#fff;border-radius:10px;box-shadow:0 26px 80px rgba(0,0,0,.24);padding:28px}
+.cookie-modal-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:18px}
+.cookie-modal-head span{display:block;color:var(--teal);font-size:10px;font-weight:600;letter-spacing:.13em;margin-bottom:5px}
+.cookie-modal-head h2{margin:0;font-size:27px}
+.cookie-modal-close{width:38px;height:38px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--navy);font-size:25px;line-height:1;cursor:pointer}
+.cookie-modal-intro{font-size:14px;line-height:1.65;color:#607189;margin:20px 0}
+.cookie-option{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;padding:17px 0;border-top:1px solid var(--line)}
+.cookie-option strong{display:block;color:var(--navy);font-size:15px;margin-bottom:4px}
+.cookie-option span{display:block;color:#70819a;font-size:13px;line-height:1.5}
+.cookie-option input{width:20px;height:20px;accent-color:var(--navy)}
+.cookie-modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--line)}
+body.cookie-modal-open{overflow:hidden}
+
+@media(max-width:760px){
+  .cookie-banner{left:10px;right:10px;bottom:10px;align-items:stretch;flex-direction:column;gap:14px;padding:17px}
+  .cookie-banner-actions{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  .cookie-banner-actions .cookie-btn-primary{grid-column:1/-1;grid-row:1}
+  .cookie-btn{white-space:normal;min-height:44px}
+  .cookie-modal{padding:21px}
+  .cookie-modal-head h2{font-size:23px}
+  .cookie-modal-actions{display:grid;grid-template-columns:1fr}
+  .whatsapp-float{right:16px;bottom:16px;width:54px;height:54px}
+}
