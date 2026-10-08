@@ -1,3 +1,33 @@
+# Health View — https://www.healthview.com.br/
+
+# Buscadores e robôs de busca de IA: liberados (geram citação e tráfego)
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Applebot
+User-agent: Google-Extended
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+Allow: /
+
+# Robôs de TREINO de IA (GPTBot, ClaudeBot, CCBot): hoje liberados pela regra geral.
+# A decisão é do dono do site. Para bloquear, remova o "#" das linhas abaixo.
+# User-agent: GPTBot
+# User-agent: ClaudeBot
+# User-agent: CCBot
+# Disallow: /
+
+# Raspadores comerciais de SEO: consomem banda sem retorno
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+Disallow: /
+
 User-agent: *
 Allow: /
-Sitemap: https://SEU-DOMINIO.com.br/profissionais/sitemap.xml
+
+Sitemap: https://www.healthview.com.br/sitemap.xml

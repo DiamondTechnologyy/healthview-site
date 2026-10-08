@@ -7,10 +7,16 @@
     marketing: false
   };
 
+  // A escolha vale 12 meses; depois disso o banner volta a perguntar.
+  const MAX_AGE = 365 * 24 * 60 * 60 * 1000;
+
   function getConsent(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? {...defaultConsent, ...JSON.parse(raw)} : null;
+      if(!raw) return null;
+      const saved = JSON.parse(raw);
+      if(!saved.ts || Date.now() - saved.ts > MAX_AGE) return null;
+      return {...defaultConsent, ...saved};
     }catch(e){
       return null;
     }
@@ -35,7 +41,8 @@
   }
 
   function saveConsent(consent){
-    const finalConsent = {...defaultConsent, ...consent};
+    // Data e versão ficam registradas como prova da escolha.
+    const finalConsent = {...defaultConsent, ...consent, ts: Date.now(), v: 3};
 
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(finalConsent));
