@@ -48,12 +48,7 @@
     window.hvTrack&&window.hvTrack('cta_click',{cta:a.dataset.cta||'unknown'});
     window.hvTrack&&window.hvTrack('demo_request',{cta:a.dataset.cta||'unknown'});
   }));
-
-  document.querySelectorAll('a[href$="health-view-profissionais.pdf"]').forEach(a=>
-    a.addEventListener('click',()=>window.hvTrack&&window.hvTrack('presentation_download',{location:'landing'}))
-  );
-
-  // Garante acesso permanente às preferências no rodapé.
+// Garante acesso permanente às preferências no rodapé.
   const privacyLink=document.querySelector('.site-footer a[href="privacidade.html"]');
   if(privacyLink && !document.querySelector('.js-cookie-settings')){
     const settings=document.createElement('a');
@@ -81,75 +76,6 @@
       e.target.setSelectionRange(e.target.value.length, e.target.value.length);
     });
   }
-
-
-
-  const form=document.getElementById('lead-form');
-  if(form){
-    // Fallback HTML: se o JavaScript de envio falhar, o navegador ainda conhece o endpoint.
-    if(cfg.formEndpoint){
-      form.action=cfg.formEndpoint;
-      form.method='POST';
-    }
-
-    const consent=form.querySelector('.consent input[type="checkbox"]');
-    if(consent){
-      consent.name='consentimento';
-      consent.value='sim';
-    }
-
-    if(!form.querySelector('input[name="_subject"]')){
-      const subject=document.createElement('input');
-      subject.type='hidden';
-      subject.name='_subject';
-      subject.value='Novo lead - Health View';
-      form.appendChild(subject);
-    }
-
-    form.addEventListener('submit',async(e)=>{
-      e.preventDefault();
-      const status=document.getElementById('form-status');
-      const submit=form.querySelector('button[type="submit"]');
-      if(!form.reportValidity()) return;
-
-      const endpoint=cfg.formEndpoint||form.getAttribute('action');
-      if(!endpoint){
-        if(status) status.textContent='Formulário temporariamente indisponível. Use o WhatsApp para falar conosco.';
-        return;
-      }
-
-      const formData=new FormData(form);
-      const data=Object.fromEntries(formData.entries());
-
-      try{
-        if(status) status.textContent='Enviando...';
-        if(submit){ submit.disabled=true; submit.setAttribute('aria-busy','true'); }
-
-        const r=await fetch(endpoint,{
-          method:'POST',
-          body:formData,
-          headers:{'Accept':'application/json'}
-        });
-
-        if(!r.ok){
-          let detail='';
-          try{
-            const body=await r.json();
-            detail=Array.isArray(body.errors)?body.errors.map(x=>x.message).filter(Boolean).join(' '):'';
-          }catch(_){ }
-          throw new Error(detail||'Falha no envio');
-        }
-
-        window.hvTrack&&window.hvTrack('generate_lead',{interest:data.interesse||''});
-        location.href=cfg.successUrl||'obrigado.html';
-      }catch(err){
-        if(status) status.textContent='Não foi possível enviar agora. Tente novamente ou fale conosco pelo WhatsApp.';
-      }finally{
-        if(submit){ submit.disabled=false; submit.removeAttribute('aria-busy'); }
-      }
-    });
-  }
+  // O envio do formulário é tratado pela integração oficial @formspree/ajax
+  // inicializada no index.html. O action/method do HTML permanecem como fallback.
 })();
-
-
-
